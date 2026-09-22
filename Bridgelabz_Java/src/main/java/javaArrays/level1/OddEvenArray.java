@@ -1,4 +1,4 @@
-package javaArrays;
+package javaArrays.level1;
 import java.util.Scanner;
 //create class to take odd numbers into odd array and even numbers into even Array and display them
 public class OddEvenArray {

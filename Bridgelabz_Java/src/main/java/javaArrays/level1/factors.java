@@ -1,4 +1,4 @@
-package javaArrays;
+package javaArrays.level1;
 import java.util.Scanner;
 //create a class to display factors
 public class factors {

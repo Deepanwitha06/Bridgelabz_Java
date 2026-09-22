@@ -1,4 +1,4 @@
-package javaArrays;
+package javaArrays.level1;
 import java.util.Scanner;
 //create class to show all numbers and sum till the number is zero ro neagtive
 public class SumTillZeroorNegative {

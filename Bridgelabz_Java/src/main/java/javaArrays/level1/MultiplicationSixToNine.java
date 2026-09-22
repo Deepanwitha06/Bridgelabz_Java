@@ -1,4 +1,4 @@
-package javaArrays;
+package javaArrays.level1;
 import java.util.Scanner;
 //creating class to display multiplication table from 6 to 9
 public class MultiplicationSixToNine {

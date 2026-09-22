@@ -1,4 +1,4 @@
-package javaArrays;
+package javaArrays.level1;
 import java.util.Scanner;
 //create class to convert 2D array to 1D array
 public class TwotoOneDimension {

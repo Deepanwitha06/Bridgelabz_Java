@@ -1,4 +1,4 @@
-package javaArrays;
+package javaArrays.level1;
 import java.util.Scanner;
 //create class to calculate mean of the heights
 public class MeanHeight {

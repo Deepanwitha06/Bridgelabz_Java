@@ -1,4 +1,4 @@
-package javaArrays;
+package javaArrays.level1;
 import java.util.Scanner;
 //create a class to display Fizz for multiple of 3 ,Buzz for multiple of 5 ,FizzBuzz for multiple of both and number in other case
 public class FizzBuzz {
