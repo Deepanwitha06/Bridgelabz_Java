@@ -142,3 +142,23 @@ What I will do:
 
 Issues faced:
 * Initially had some confusion regarding string operations and character handling.
+
+### Day 09 - 28 Sep 2026
+
+What I have done:
+* Completed Strings Level 3
+* Worked on Extras problems in Strings (Datettime , built-in related)
+
+What I will do:
+* start oops concept
+
+Issues faced:
+* Faced some confusion about Datetime 
+
+
+
+
+
+
+
+
