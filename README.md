@@ -167,6 +167,18 @@ What I will do:
 
 * Work on today's Java tasks.
 
+### Day 11 — 30 Sep 2026
+
+What I have done:
+
+* Worked on constructors.
+* Practiced instance variables and class variables.
+* Learned about access modifiers.
+* Practiced different types of constructors and their usage.
+
+What I will do:
+
+* Continue working on OOP concepts and Java tasks.
 
 ### Day 12 — 1 Oct 2026
 
