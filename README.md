@@ -155,8 +155,67 @@ What I will do:
 Issues faced:
 * Faced some confusion about Datetime 
 
+### Day 10 — 29 Sep 2026
+
+What I have done:
+
+* Worked on constructors.
+* Learned about instance variables and class variables.
+* Worked on access modifiers.
+
+What I will do:
+
+* Work on today's Java tasks.
 
 
+### Day 12 — 1 Oct 2026
+
+What I have done:
+
+* Completed problems on the `this` keyword.
+* Worked on `static` and `final` keywords.
+* Practiced the `instanceof` operator.
+
+What I will do:
+
+* Work on object modeling and relationship problems.
+
+
+
+### Day 13 — 2 Oct 2026
+
+What I have done:
+
+* Worked on association, aggregation, and composition concepts.
+* Practiced problems based on object relationships.
+
+What I will do:
+
+* Work on pending tasks.
+
+
+
+### Day 14 — 3 Oct 2026
+
+What I have done:
+
+* Completed problems on inheritance.
+
+What I will do:
+
+* Work on the pending tasks.
+
+
+
+### Day 15 — 5 Oct 2026
+
+What I have done:
+
+* Worked on pending tasks related to aggregation, association, and composition.
+
+What I will do:
+
+* Continue practicing problems on OOP concepts.
 
 
 
