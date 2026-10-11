@@ -1,324 +1,221 @@
 package LinkedList;
 import java.util.Scanner;
 
-class Movie {
+/*
+           using doubly linked list movie management system
+           Methods: add movie at beginning,end and specific postion
+                    remove movie by movie title
+                    search movie by director or rating
+                    display all movie records in both forward and reverse order
+                    update movie rating based on movie title
+ */
+
+class Movie{
     String title;
     String director;
-    int yearOfRelease;
+    String yearOfRelease;
     double rating;
-    Movie prev;
     Movie next;
+    Movie prev;
 
-    Movie(String title, String director, int yearOfRelease, double rating) {
+    public Movie(String title,String director,String yearOfRelease, double rating){
         this.title=title;
         this.director=director;
         this.yearOfRelease=yearOfRelease;
         this.rating=rating;
-        this.prev=null;
         this.next=null;
+        this.prev=null;
     }
 }
 
-class MovieDoublyLinkedList {
+class MovieLinkedList{
     private Movie head;
     private Movie tail;
 
-    // Add movie at the beginning
-    public void addAtBeginning(String title, String director, int year, double rating) {
-        Movie newMovie=new Movie(title,director,year,rating);
-
-        if(head==null) {
-            head=tail=newMovie;
-        } else {
-            newMovie.next=head;
-            head.prev=newMovie;
+    //add movieat beginning
+    public void insertAtBeginning(String title,String director,String yearOfRelease, double rating){
+        Movie newMovie=new Movie( title, director, yearOfRelease, rating);
+        if(head==null){
             head=newMovie;
-        }
-
-        System.out.println("Movie added at the beginning.");
-    }
-
-    // Add movie at the end
-    public void addAtEnd(String title, String director, int year, double rating) {
-        Movie newMovie=new Movie(title,director,year,rating);
-
-        if(tail==null) {
-            head=tail=newMovie;
-        } else {
-            tail.next=newMovie;
-            newMovie.prev=tail;
             tail=newMovie;
+            return;
         }
-
-        System.out.println("Movie added at the end.");
+        newMovie.next=head;
+        head.prev=newMovie;
+        head=newMovie;
     }
 
-    // Add movie at a specific position (1-based indexing)
-    public void addAtPosition(String title, String director, int year, double rating, int position) {
-        if(position<1) {
-            System.out.println("Invalid position.");
+    //add movie at end
+    public void insertAtEnd(String title,String director,String yearOfRelease, double rating){
+        Movie newMovie=new Movie( title, director, yearOfRelease, rating);
+        if(head==null){
+            head=newMovie;
+            tail=newMovie;
             return;
         }
-
-        if(position==1) {
-            addAtBeginning(title,director,year,rating);
-            return;
-        }
-
         Movie current=head;
-
-        for(int i=1;i<position-1 && current!=null;i++) {
+        while(current.next!=null){
             current=current.next;
         }
+        current.next=newMovie;
+        newMovie.prev=current;
+        tail=newMovie;
+    }
 
-        if(current==null) {
-            System.out.println("Invalid position.");
+    //add movie at a postion
+    public void insertAtSpecificposition(String title,String director,String yearOfRelease, double rating,int position){
+        Movie newMovie=new Movie( title, director, yearOfRelease, rating);
+        if(position<0){
+            System.out.println("Invalid position");
             return;
         }
-
-        if(current==tail) {
-            addAtEnd(title,director,year,rating);
+        if(position==0){
+            insertAtBeginning(title, director, yearOfRelease, rating);
             return;
         }
-
-        Movie newMovie=new Movie(title,director,year,rating);
+        Movie current=head;
+        for(int i=0;i<position-1 && current!=null;i++){
+            current=current.next;
+        }
+        if(current==null){
+            System.out.println("Invalid position");
+            return;
+        }
         newMovie.next=current.next;
         newMovie.prev=current;
-        current.next.prev=newMovie;
-        current.next=newMovie;
-
-        System.out.println("Movie added at position "+position+".");
+        if(current.next==null){
+            tail=newMovie;
+        }else {
+            current.next.prev = newMovie;
+        }
+        current.next = newMovie;
+        return;
     }
 
-    // Remove movie by title
-    public void removeMovie(String title) {
-        Movie current=head;
-
-        while(current!=null && !current.title.equalsIgnoreCase(title)) {
-            current=current.next;
-        }
-
-        if(current==null) {
-            System.out.println("Movie not found.");
+    //remove movie by title
+    public void deleteByTitle(String targettitle){
+        if(head==null){
+            System.out.println("No movies");
             return;
         }
-
-        if(current==head) {
-            head=current.next;
-        } else {
-            current.prev.next=current.next;
-        }
-
-        if(current==tail) {
-            tail=current.prev;
-        } else {
-            current.next.prev=current.prev;
-        }
-
-        if(head!=null) {
-            head.prev=null;
-        }
-
-        if(tail!=null) {
-            tail.next=null;
-        }
-
-        System.out.println("Movie removed successfully.");
-    }
-
-    // Search movies by director
-    public void searchByDirector(String director) {
-        Movie current=head;
-        boolean found=false;
-
-        while(current!=null) {
-            if(current.director.equalsIgnoreCase(director)) {
-                displayMovie(current);
-                found=true;
+        if(head.title.equalsIgnoreCase(targettitle)){
+            head=head.next;
+            if(head==null){
+                tail=null;
+            }else{
+                head.prev=null;
             }
-            current=current.next;
-        }
-
-        if(!found) {
-            System.out.println("No movies found for this director.");
-        }
-    }
-
-    // Search movies by rating
-    public void searchByRating(double rating) {
-        Movie current=head;
-        boolean found=false;
-
-        while(current!=null) {
-            if(Double.compare(current.rating,rating)==0) {
-                displayMovie(current);
-                found=true;
-            }
-            current=current.next;
-        }
-
-        if(!found) {
-            System.out.println("No movies found with this rating.");
-        }
-    }
-
-    // Display all movies in forward order
-    public void displayForward() {
-        if(head==null) {
-            System.out.println("No movie records available.");
             return;
         }
-
         Movie current=head;
-        System.out.println("\n--- Movies: Forward Order ---");
-
-        while(current!=null) {
-            displayMovie(current);
-            current=current.next;
-        }
-    }
-
-    // Display all movies in reverse order
-    public void displayReverse() {
-        if(tail==null) {
-            System.out.println("No movie records available.");
-            return;
-        }
-
-        Movie current=tail;
-        System.out.println("\n--- Movies: Reverse Order ---");
-
-        while(current!=null) {
-            displayMovie(current);
-            current=current.prev;
-        }
-    }
-
-    // Update rating by movie title
-    public void updateRating(String title, double newRating) {
-        Movie current=head;
-
-        while(current!=null) {
-            if(current.title.equalsIgnoreCase(title)) {
-                current.rating=newRating;
-                System.out.println("Movie rating updated successfully.");
+        while(current.next!=null){
+            if(current.next.title.equalsIgnoreCase(targettitle)){
+                if(current.next.next==null){
+                    current.next=null;
+                    tail=current;
+                    return;
+                }
+                Movie deletedMovie=current.next;
+                current.next=deletedMovie.next;
+                deletedMovie.next.prev=current;
                 return;
             }
             current=current.next;
         }
-
-        System.out.println("Movie not found.");
     }
 
-    // Display one movie record
-    private void displayMovie(Movie movie) {
-        System.out.println("Movie Title: "+movie.title);
-        System.out.println("Director: "+movie.director);
-        System.out.println("Year of Release: "+movie.yearOfRelease);
-        System.out.println("Rating: "+movie.rating);
-        System.out.println("-----------------------------");
+    //search movie by director or rating
+    public boolean searchByDirector(String targetDirector){
+        if(head==null){
+            System.out.println("No movies ");
+            return false;
+        }
+        Movie current=head;
+        while(current!=null){
+            if(current.director==targetDirector){
+                return true;
+            }
+            current=current.next;
+        }
+        return false;
+    }
+    public boolean searchByRating(double targetRating){
+        if(head==null){
+            System.out.println("no Movies");
+            return false;
+        }
+        Movie current=head;
+        while(current!=null){
+            if(Double.compare(current.rating,targetRating)==0){
+                return true;
+            }
+            current=current.next;
+        }
+        return false;
+    }
+
+    //display
+    public void displaymovieDetails(){
+        int i=1;
+        System.out.println("Forward order: ");
+        if(head==null){
+            System.out.println("No movies");
+        }
+        Movie current=head;
+        while(current!=null){
+            System.out.println("Movie "+i+" details: "+"\nTitle: "+current.title+"\nDirector: "+current.director+"\nYear of release: "+current.yearOfRelease+"Rating: "+current.rating);
+            i++;
+            current=current.next;
+        }
+        current=tail;
+        System.out.println("Reverse order: ");
+        while(current!=null){
+            System.out.println("Movie "+i+" details: "+"\nTitle: "+current.title+"\nDirector: "+current.director+"\nYear of release: "+current.yearOfRelease+"Rating: "+current.rating);
+            i--;
+            current=current.prev;
+        }
+    }
+
+    //update rating
+    public void updateRating(String targetTitle,double targetRating){
+        if(head==null){
+            System.out.println("no movies");
+            return;
+        }
+        Movie current=head;
+        while(current!=null){
+            if(current.title==targetTitle){
+                current.rating=targetRating;
+                System.out.println("Updated");
+                return;
+            }
+            current=current.next;
+        }
     }
 }
 
 public class MovieManagementSystem {
-    public static void main(String[] args) {
-        Scanner sc=new Scanner(System.in);
-        MovieDoublyLinkedList list=new MovieDoublyLinkedList();
-        int choice;
+    public static void main(String[] args){
 
-        do {
-            System.out.println("\n===== Movie Management System =====");
-            System.out.println("1. Add movie at beginning");
-            System.out.println("2. Add movie at end");
-            System.out.println("3. Add movie at specific position");
-            System.out.println("4. Remove movie by title");
-            System.out.println("5. Search by director");
-            System.out.println("6. Search by rating");
-            System.out.println("7. Display movies forward");
-            System.out.println("8. Display movies in reverse");
-            System.out.println("9. Update movie rating");
-            System.out.println("10. Exit");
-            System.out.print("Enter your choice: ");
-            choice=sc.nextInt();
-            sc.nextLine();
+        MovieLinkedList list=new MovieLinkedList();
 
-            switch(choice) {
-                case 1:
-                case 2:
-                case 3:
-                    System.out.print("Enter movie title: ");
-                    String title=sc.nextLine();
+        list.insertAtBeginning("Inception","Christopher Nolan","2010",8.8);
+        list.insertAtEnd("Avatar","James Cameron","2009",7.9);
+        list.insertAtSpecificposition("Interstellar","Christopher Nolan","2014",8.7,1);
 
-                    System.out.print("Enter director: ");
-                    String director=sc.nextLine();
+        list.displaymovieDetails();
 
-                    System.out.print("Enter year of release: ");
-                    int year=sc.nextInt();
+        System.out.println("\nSearch by director:");
+        System.out.println(list.searchByDirector("Christopher Nolan"));
 
-                    System.out.print("Enter rating: ");
-                    double rating=sc.nextDouble();
-                    sc.nextLine();
+        System.out.println("\nSearch by rating:");
+        System.out.println(list.searchByRating(7.9));
 
-                    if(choice==1) {
-                        list.addAtBeginning(title,director,year,rating);
-                    } else if(choice==2) {
-                        list.addAtEnd(title,director,year,rating);
-                    } else {
-                        System.out.print("Enter position (starting from 1): ");
-                        int position=sc.nextInt();
-                        sc.nextLine();
+        list.updateRating("Avatar",8.2);
+        list.deleteByTitle("Inception");
 
-                        list.addAtPosition(title,director,year,rating,position);
-                    }
-                    break;
+        System.out.println("\nAfter deletion:");
+        list.displaymovieDetails();
 
-                case 4:
-                    System.out.print("Enter movie title to remove: ");
-                    title=sc.nextLine();
-                    list.removeMovie(title);
-                    break;
-
-                case 5:
-                    System.out.print("Enter director name: ");
-                    director=sc.nextLine();
-                    list.searchByDirector(director);
-                    break;
-
-                case 6:
-                    System.out.print("Enter rating to search: ");
-                    rating=sc.nextDouble();
-                    sc.nextLine();
-                    list.searchByRating(rating);
-                    break;
-
-                case 7:
-                    list.displayForward();
-                    break;
-
-                case 8:
-                    list.displayReverse();
-                    break;
-
-                case 9:
-                    System.out.print("Enter movie title: ");
-                    title=sc.nextLine();
-
-                    System.out.print("Enter new rating: ");
-                    double newRating=sc.nextDouble();
-                    sc.nextLine();
-
-                    list.updateRating(title,newRating);
-                    break;
-
-                case 10:
-                    System.out.println("Exiting Movie Management System.");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        } while(choice!=10);
-
-        sc.close();
     }
 }

@@ -1,253 +1,156 @@
 package LinkedList;
 import java.util.Scanner;
+/*
+      linked list for student recore management
+      Methods: insert new student at beginning,end or at position
+               delete student by roll number
+               search student records by roll number
+               display studnt records
+               update student grade based on their roll number
+ */
 
 class Student {
-    int rollNumber;
+    int rollNo;
     String name;
     int age;
-    String grade;
+    char grade;
     Student next;
 
-    Student(int rollNumber, String name, int age, String grade) {
-        this.rollNumber=rollNumber;
-        this.name=name;
-        this.age=age;
-        this.grade=grade;
-        this.next=null;
+    public Student(int rollNo, String name, int age, char grade) {
+        this.rollNo = rollNo;
+        this.name = name;
+        this.age = age;
+        this.grade = grade;
+        this.next = null;
     }
 }
-
-class StudentLinkedList {
+class StudentLinkedList{
     private Student head;
-
-    // Add student at the beginning
-    public void addAtBeginning(int rollNumber, String name, int age, String grade) {
-        Student newStudent=new Student(rollNumber,name,age,grade);
+    public void insertStudentAtBeginning(int rollNo,String name,int age,char grade){
+        Student newStudent=new Student(rollNo,name,age,grade);
         newStudent.next=head;
         head=newStudent;
-        System.out.println("Student added at the beginning.");
     }
 
-    // Add student at the end
-    public void addAtEnd(int rollNumber, String name, int age, String grade) {
-        Student newStudent=new Student(rollNumber,name,age,grade);
-
-        if(head==null) {
+    public void inserStudentAtEnd(int rollNo,String name,int age,char grade){
+        Student newStudent=new Student(rollNo,name,age,grade);
+        Student current=head;
+        if(current==null){
             head=newStudent;
-            System.out.println("Student added at the end.");
             return;
         }
-
-        Student current=head;
-        while(current.next!=null) {
+        while(current.next!=null){
             current=current.next;
         }
-
         current.next=newStudent;
-        System.out.println("Student added at the end.");
+        newStudent.next=null;
     }
 
-    // Add student at a specific position (1-based indexing)
-    public void addAtPosition(int rollNumber, String name, int age, String grade, int position) {
-        if(position<1) {
-            System.out.println("Invalid position.");
-            return;
-        }
-
-        if(position==1) {
-            addAtBeginning(rollNumber,name,age,grade);
-            return;
-        }
-
+    public void insertStudentAtPosition(int rollNo,String name,int age,char grade,int position){
+        Student newStudent=new Student(rollNo,name,age,grade);
         Student current=head;
-
-        for(int i=1;i<position-1 && current!=null;i++) {
+        if(position<0) {
+            System.out.println("Invalid position");
+            return;
+        }
+        if(position==0){
+            insertStudentAtBeginning(rollNo,name,age,grade);
+            return;
+        }
+        for(int i=0;i<position-1 && current!=null;i++){
             current=current.next;
         }
-
         if(current==null) {
-            System.out.println("Invalid position.");
+            System.out.println("Invalid position");
             return;
         }
-
-        Student newStudent=new Student(rollNumber,name,age,grade);
         newStudent.next=current.next;
         current.next=newStudent;
-
-        System.out.println("Student added at position "+position+".");
     }
 
-    // Delete student by roll number
-    public void deleteStudent(int rollNumber) {
-        if(head==null) {
-            System.out.println("No student records available.");
-            return;
+    //delete student record by roll number
+    public boolean deleteStudentByRollnumber(int targetRollNo){
+        Student current=head;
+        if(current==null){
+            return false;
         }
-
-        if(head.rollNumber==rollNumber) {
+        if(current.rollNo==targetRollNo){
             head=head.next;
-            System.out.println("Student record deleted.");
-            return;
+            return true;
         }
-
-        Student current=head;
-
-        while(current.next!=null && current.next.rollNumber!=rollNumber) {
+        while(current.next!=null){
+            if(current.next.rollNo==targetRollNo){
+                current.next=current.next.next;
+                return true;
+            }
             current=current.next;
         }
-
-        if(current.next==null) {
-            System.out.println("Student not found.");
-            return;
-        }
-
-        current.next=current.next.next;
-        System.out.println("Student record deleted.");
+        return false;
     }
 
-    // Search student by roll number
-    public void searchStudent(int rollNumber) {
+    //search for a student record by roll no
+    public boolean searchSrtudentByRollno(int targetRollno){
         Student current=head;
+        while (current!=null){
+            if(current.rollNo==targetRollno){
+                return true;
+            }
+            current=current.next;
+        }
+        return false;
+    }
 
-        while(current!=null) {
-            if(current.rollNumber==rollNumber) {
-                System.out.println("\nStudent found:");
-                displayStudent(current);
+
+    //display student records
+    public void displayStudentDeatils(){
+        Student current=head;
+        int i=0;
+        while(current!=null){
+            System.out.println("\nStudent"+(i+1)+" details:\nRoll no.:"+current.rollNo+"\nName: "+current.name+"\nAge: "+current.age+"\nGrade: "+current.grade);
+            current=current.next;
+            i++;
+        }
+    }
+
+    //update student grade
+    public void updateStudentGrade(int targetRollno,char updateGrade){
+        Student current=head;
+        while (current!=null){
+            if(current.rollNo==targetRollno){
+                current.grade=updateGrade;
+                System.out.println("Update successful");
                 return;
             }
             current=current.next;
         }
-
-        System.out.println("Student not found.");
-    }
-
-    // Display all student records
-    public void displayStudents() {
-        if(head==null) {
-            System.out.println("No student records available.");
-            return;
-        }
-
-        Student current=head;
-
-        System.out.println("\nStudent Records ");
-
-        while(current!=null) {
-            displayStudent(current);
-            current=current.next;
-        }
-    }
-
-    // Display one student record
-    private void displayStudent(Student student) {
-        System.out.println("Roll Number: "+student.rollNumber);
-        System.out.println("Name: "+student.name);
-        System.out.println("Age: "+student.age);
-        System.out.println("Grade: "+student.grade);
-    }
-
-    // Update grade by roll number
-    public void updateGrade(int rollNumber, String newGrade) {
-        Student current=head;
-
-        while(current!=null) {
-            if(current.rollNumber==rollNumber) {
-                current.grade=newGrade;
-                System.out.println("Student grade updated successfully.");
-                return;
-            }
-            current=current.next;
-        }
-
-        System.out.println("Student not found.");
+        System.out.println("Update not succussfull");
     }
 }
 
+
 public class StudentRecordManagement {
-    public static void main(String[] args) {
-        Scanner sc=new Scanner(System.in);
+    public static void main(String[] args){
         StudentLinkedList list=new StudentLinkedList();
-        int choice;
 
-        do {
-            System.out.println("\n===== Student Record Management =====");
-            System.out.println("1. Add student at beginning");
-            System.out.println("2. Add student at end");
-            System.out.println("3. Add student at specific position");
-            System.out.println("4. Delete student by roll number");
-            System.out.println("5. Search student by roll number");
-            System.out.println("6. Display all students");
-            System.out.println("7. Update student grade");
-            System.out.println("8. Exit");
-            System.out.print("Enter your choice: ");
-            choice=sc.nextInt();
-            sc.nextLine();
+        // Insert student records
+        list.insertStudentAtBeginning(1,"reena",10,'A');
+        list.inserStudentAtEnd(2,"priya",11,'B');
+        list.inserStudentAtEnd(3,"rahul",12,'A');
 
-            switch(choice) {
-                case 1:
-                case 2:
-                case 3:
-                    System.out.print("Enter roll number: ");
-                    int rollNumber=sc.nextInt();
-                    sc.nextLine();
+        // Display all student records
+        list.displayStudentDeatils();
 
-                    System.out.print("Enter student name: ");
-                    String name=sc.nextLine();
+        // Search student by roll number
+        System.out.println("\nStudent found: "+list.searchSrtudentByRollno(2));
 
-                    System.out.print("Enter age: ");
-                    int age=sc.nextInt();
-                    sc.nextLine();
+        // Update student grade
+        list.updateStudentGrade(2,'A');
 
-                    System.out.print("Enter grade: ");
-                    String grade=sc.nextLine();
+        // Delete student by roll number
+        list.deleteStudentByRollnumber(1);
 
-                    if(choice==1) {
-                        list.addAtBeginning(rollNumber,name,age,grade);
-                    } else if(choice==2) {
-                        list.addAtEnd(rollNumber,name,age,grade);
-                    } else {
-                        System.out.print("Enter position (starting from 1): ");
-                        int position=sc.nextInt();
-                        list.addAtPosition(rollNumber,name,age,grade,position);
-                    }
-                    break;
-
-                case 4:
-                    System.out.print("Enter roll number to delete: ");
-                    rollNumber=sc.nextInt();
-                    list.deleteStudent(rollNumber);
-                    break;
-
-                case 5:
-                    System.out.print("Enter roll number to search: ");
-                    rollNumber=sc.nextInt();
-                    list.searchStudent(rollNumber);
-                    break;
-
-                case 6:
-                    list.displayStudents();
-                    break;
-
-                case 7:
-                    System.out.print("Enter roll number: ");
-                    rollNumber=sc.nextInt();
-                    sc.nextLine();
-
-                    System.out.print("Enter new grade: ");
-                    String newGrade=sc.nextLine();
-
-                    list.updateGrade(rollNumber,newGrade);
-                    break;
-
-                case 8:
-                    System.out.println("Exiting Student Record Management.");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        } while(choice!=8);
-
-        sc.close();
+        // Display records after deletion
+        System.out.println("\nAfter deletion:");
+        list.displayStudentDeatils();
     }
 }

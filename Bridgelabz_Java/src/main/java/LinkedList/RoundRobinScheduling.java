@@ -1,303 +1,178 @@
 package LinkedList;
+/*
+    Circular Linked List: Round Robin Scheduling Algorithm
+    Node: Process
+    Attributes: Process ID, Burst Time, Priority
+    Functionalities:
+    1. Add process
+    2. Remove completed process
+    3. Execute processes using time quantum
+    4. Display queue after each round
+    5. Calculate average waiting and turnaround time
+*/
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
-class Process {
+class Process{
     int processId;
     int burstTime;
-    int remainingBurstTime;
+    int remainingTime;
     int priority;
     int completionTime;
     Process next;
 
-    Process(int processId,int burstTime,int priority) {
+
+    Process(int processId,int burstTime,int priority){
         this.processId=processId;
         this.burstTime=burstTime;
-        this.remainingBurstTime=burstTime;
+        this.remainingTime=burstTime;
         this.priority=priority;
         this.completionTime=0;
         this.next=null;
     }
 }
 
-class CircularProcessList {
-    private Process head;
-    private Process tail;
-    private int processCount;
 
-    // Store every process so its scheduling statistics remain available
-    private ArrayList<Process> allProcesses=new ArrayList<>();
+class RoundRobinQueue{
+    Process last;
+    int size;
+    Process[] allProcesses=new Process[100];
+    int totalProcesses;
+    int completedCount;
 
-    public boolean containsProcess(int processId) {
-        if(head==null) {
-            return false;
+    public void addProcess(int processId,int burstTime,int priority){
+        if(burstTime<=0){
+            System.out.println("Burst time must be positive");
+            return;
         }
 
-        Process current=head;
-
-        do {
-            if(current.processId==processId) {
-                return true;
-            }
-            current=current.next;
-        } while(current!=head);
-
-        return false;
-    }
-
-    // Add a process at the end of the circular linked list
-    public void addProcess(int processId,int burstTime,int priority) {
-        if(containsProcess(processId)) {
-            System.out.println("Process ID already exists.");
+        if(totalProcesses==allProcesses.length){
+            System.out.println("Process storage is full");
             return;
         }
 
         Process newProcess=new Process(processId,burstTime,priority);
 
-        if(head==null) {
-            head=newProcess;
-            tail=newProcess;
-            tail.next=head;
-        } else {
-            tail.next=newProcess;
-            tail=newProcess;
-            tail.next=head;
+        if(last==null){
+            last=newProcess;
+            newProcess.next=newProcess;
+        }else{
+            newProcess.next=last.next;
+            last.next=newProcess;
+            last=newProcess;
         }
 
-        allProcesses.add(newProcess);
-        processCount++;
-
-        System.out.println("Process added successfully.");
+        allProcesses[totalProcesses++]=newProcess;
+        size++;
     }
 
-    // Remove the process at the beginning of the circular list
-    private void removeHead() {
-        if(head==null) {
+    public void removeProcess(int processId){
+        if(last==null){
             return;
         }
+        Process previous=last;
+        Process current=last.next;
+        do{
+            if(current.processId==processId){
+                if(current==previous){
+                    last=null;
+                }else{
+                    previous.next=current.next;
+                    if(current==last){
+                        last=previous;
+                    }
+                }
+                current.next=null;
+                size--;
+                return;
+            }
 
-        if(head==tail) {
-            head=null;
-            tail=null;
-        } else {
-            head=head.next;
-            tail.next=head;
-        }
-
-        processCount--;
-    }
-
-    // Move the front process to the end of the circular queue
-    private void moveToNextProcess() {
-        if(head!=null && head!=tail) {
-            head=head.next;
-            tail=tail.next;
-        }
-    }
-
-    // Display the active circular queue
-    public void displayProcesses() {
-        if(head==null) {
-            System.out.println("No processes in the circular queue.");
-            return;
-        }
-
-        Process current=head;
-
-        System.out.println("\nCurrent Circular Process Queue:");
-        System.out.println("PID\tBurst\tRemaining\tPriority");
-
-        do {
-            System.out.println(
-                    current.processId+"\t"+
-                            current.burstTime+"\t"+
-                            current.remainingBurstTime+"\t\t"+
-                            current.priority
-            );
-
+            previous=current;
             current=current.next;
-        } while(current!=head);
-
-        System.out.println("The last process points back to the first process.");
+        }while(current!=last.next);
     }
 
-    // Simulate Round Robin CPU scheduling
-    public void simulateRoundRobin(int timeQuantum) {
-        if(head==null) {
-            System.out.println("No processes available for scheduling.");
+    public void displayQueue(){
+        if(last==null){
+            System.out.println("Queue is empty");
             return;
         }
+        Process current=last.next;
+        do{
+            System.out.println("P"+current.processId+ " | Remaining Time: "+current.remainingTime+ " | Priority: "+current.priority);
+            current=current.next;
+        }while(current!=last.next);
+    }
 
-        if(timeQuantum<=0) {
-            System.out.println("Time quantum must be positive.");
+    public void schedule(int timeQuantum){
+        if(timeQuantum<=0){
+            System.out.println("Time quantum must be positive");
             return;
         }
-
+        if(last==null){
+            System.out.println("No processes to execute");
+            return;
+        }
         int currentTime=0;
         int round=1;
+        while(last!=null){
+            System.out.println("\nRound "+round);
+            int processesInRound=size;
+            for(int i=0;i<processesInRound && last!=null;i++){
+                Process current=last.next;
 
-        System.out.println("\n--- Round Robin Scheduling Started ---");
+                int executionTime=Math.min(timeQuantum,current.remainingTime);
+                System.out.println("Executing P"+current.processId+ " for "+executionTime+" units");
 
-        while(head!=null) {
-            // Each process present at the start of this round gets one turn
-            int processesInRound=processCount;
-
-            System.out.println("\n========== Round "+round+" ==========");
-
-            for(int i=0;i<processesInRound && head!=null;i++) {
-                Process current=head;
-
-                int executionTime=Math.min(
-                        timeQuantum,current.remainingBurstTime
-                );
-
-                System.out.println(
-                        "Process P"+current.processId+
-                                " executes from time "+currentTime+
-                                " to "+(currentTime+executionTime)
-                );
-
-                current.remainingBurstTime-=executionTime;
+                current.remainingTime-=executionTime;
                 currentTime+=executionTime;
-
-                if(current.remainingBurstTime==0) {
+                if(current.remainingTime==0){
                     current.completionTime=currentTime;
-
-                    System.out.println(
-                            "Process P"+current.processId+
-                                    " completed at time "+currentTime
-                    );
-
-                    // Remove a process after its execution is complete
-                    removeHead();
-                } else {
-                    System.out.println(
-                            "Process P"+current.processId+
-                                    " has "+current.remainingBurstTime+
-                                    " units remaining."
-                    );
-
-                    // Give the next process its turn
-                    moveToNextProcess();
+                    completedCount++;
+                    removeProcess(current.processId);
+                }else{
+                    last=current;
                 }
             }
-
-            // Display the circular queue after every round
-            displayProcesses();
+            System.out.println("Queue after round "+round+":");
+            displayQueue();
             round++;
         }
-
-        System.out.println("\n--- All Processes Completed ---");
-        displaySchedulingResults();
+        calculateAverages();
     }
 
-    // Calculate waiting time, turnaround time, and their averages
-    private void displaySchedulingResults() {
-        if(allProcesses.isEmpty()) {
-            System.out.println("No process statistics available.");
+    public void calculateAverages(){
+        if(completedCount==0){
+            System.out.println("No completed processes");
             return;
         }
-
         int totalWaitingTime=0;
-        int totalTurnaroundTime=0;
-
-        System.out.println("\nScheduling Results:");
-        System.out.println("PID\tBurst\tPriority\tCompletion\tWaiting\tTurnaround");
-
-        for(Process process:allProcesses) {
-            // All processes are assumed to arrive at time 0
-            int turnaroundTime=process.completionTime;
-            int waitingTime=turnaroundTime-process.burstTime;
-
-            totalWaitingTime+=waitingTime;
-            totalTurnaroundTime+=turnaroundTime;
-
-            System.out.println(
-                    process.processId+"\t"+
-                            process.burstTime+"\t"+
-                            process.priority+"\t\t"+
-                            process.completionTime+"\t\t"+
-                            waitingTime+"\t"+
-                            turnaroundTime
-            );
+        int totalTurnAroundTime=0;
+        System.out.println("\nProcess Results:");
+        for(int i=0;i<totalProcesses;i++){
+            Process p=allProcesses[i];
+            if(p.completionTime>0){
+                int turnAroundTime=p.completionTime;
+                int waitingTime=turnAroundTime-p.burstTime;
+                totalTurnAroundTime+=turnAroundTime;
+                totalWaitingTime+=waitingTime;
+                System.out.println("P"+p.processId+ " | Waiting Time: "+waitingTime+ " | Turnaround Time: "+turnAroundTime);
+            }
         }
 
-        double averageWaitingTime=
-                (double)totalWaitingTime/allProcesses.size();
-
-        double averageTurnaroundTime=
-                (double)totalTurnaroundTime/allProcesses.size();
-
-        System.out.printf(
-                "\nAverage Waiting Time: %.2f\n",averageWaitingTime
-        );
-
-        System.out.printf(
-                "Average Turnaround Time: %.2f\n",averageTurnaroundTime
-        );
+        System.out.println("Average Waiting Time: "+ (double)totalWaitingTime/completedCount);
+        System.out.println("Average Turnaround Time: "+ (double)totalTurnAroundTime/completedCount);
     }
 }
+public class RoundRobinScheduling{
+    public static void main(String[] args){
+        RoundRobinQueue queue=new RoundRobinQueue();
 
-public class RoundRobinScheduling {
-    public static void main(String[] args) {
-        Scanner input=new Scanner(System.in);
-        CircularProcessList processList=new CircularProcessList();
+        queue.addProcess(1,5,2);
+        queue.addProcess(2,3,1);
+        queue.addProcess(3,7,3);
 
-        int choice;
+        System.out.println("Initial Process Queue:");
+        queue.displayQueue();
 
-        do {
-            System.out.println("\n===== Round Robin Scheduling =====");
-            System.out.println("1. Add Process");
-            System.out.println("2. Display Process Queue");
-            System.out.println("3. Simulate Round Robin Scheduling");
-            System.out.println("4. Exit");
-            System.out.print("Enter your choice: ");
-
-            choice=input.nextInt();
-
-            switch(choice) {
-                case 1:
-                    System.out.print("Enter Process ID: ");
-                    int processId=input.nextInt();
-
-                    System.out.print("Enter Burst Time: ");
-                    int burstTime=input.nextInt();
-
-                    System.out.print("Enter Priority: ");
-                    int priority=input.nextInt();
-
-                    if(burstTime<=0) {
-                        System.out.println(
-                                "Burst time must be greater than zero."
-                        );
-                    } else {
-                        processList.addProcess(
-                                processId,burstTime,priority
-                        );
-                    }
-                    break;
-
-                case 2:
-                    processList.displayProcesses();
-                    break;
-
-                case 3:
-                    System.out.print("Enter Time Quantum: ");
-                    int timeQuantum=input.nextInt();
-
-                    processList.simulateRoundRobin(timeQuantum);
-                    break;
-
-                case 4:
-                    System.out.println("Exiting program.");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Try again.");
-            }
-        } while(choice!=4);
-
-        input.close();
+        queue.schedule(2);
     }
 }

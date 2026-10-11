@@ -1,6 +1,15 @@
 package LinkedList;
 import java.util.Scanner;
 
+/*
+     using circular linked list , task schedular
+     methods: Add a task at the beginning, end, or at a specific position in the circular list.
+              Remove a task by Task ID.
+              View the current task and move to the next task in the circular list.
+              Display all tasks in the list starting from the head node.
+              Search for a task by Priority.
+
+ */
 class Task {
     int taskId;
     String taskName;
@@ -17,125 +26,106 @@ class Task {
     }
 }
 
-class CircularTaskList {
-    private Task head;
-    private Task tail;
-    private Task currentTask;
+class TaskLinkedList{
+    Task head;
+    Task current;
 
-    // Count the tasks in the circular list
-    private int size() {
-        if(head==null) {
-            return 0;
+    //add a task at beginning
+    public void inserAtBeginning(int taskId, String taskName, int priority, String dueDate){
+        Task newtask=new Task( taskId,  taskName,  priority,  dueDate);
+        if (head==null) {
+            head = newtask;
+            newtask.next = head;
+            return;
         }
-
-        int count=0;
         Task current=head;
-
-        do {
-            count++;
-            current=current.next;
-        } while(current!=head);
-
-        return count;
-    }
-
-    // Add task at the beginning
-    public void addAtBeginning(int taskId, String taskName, int priority, String dueDate) {
-        Task newTask=new Task(taskId,taskName,priority,dueDate);
-
-        if(head==null) {
-            head=tail=currentTask=newTask;
-            newTask.next=head;
-        } else {
-            newTask.next=head;
-            head=newTask;
-            tail.next=head;
-        }
-
-        System.out.println("Task added at the beginning.");
-    }
-
-    // Add task at the end
-    public void addAtEnd(int taskId, String taskName, int priority, String dueDate) {
-        Task newTask=new Task(taskId,taskName,priority,dueDate);
-
-        if(head==null) {
-            head=tail=currentTask=newTask;
-            newTask.next=head;
-        } else {
-            tail.next=newTask;
-            tail=newTask;
-            tail.next=head;
-        }
-
-        System.out.println("Task added at the end.");
-    }
-
-    // Add task at a specific position (1-based indexing)
-    public void addAtPosition(int taskId, String taskName, int priority, String dueDate, int position) {
-        int count=size();
-
-        if(position<1 || position>count+1) {
-            System.out.println("Invalid position.");
-            return;
-        }
-
-        if(position==1) {
-            addAtBeginning(taskId,taskName,priority,dueDate);
-            return;
-        }
-
-        if(position==count+1) {
-            addAtEnd(taskId,taskName,priority,dueDate);
-            return;
-        }
-
-        Task newTask=new Task(taskId,taskName,priority,dueDate);
-        Task current=head;
-
-        for(int i=1;i<position-1;i++) {
+        while(current.next!=head){
             current=current.next;
         }
-
-        newTask.next=current.next;
-        current.next=newTask;
-
-        System.out.println("Task added at position "+position+".");
+        newtask.next=head;
+        current.next=newtask;
+        head=newtask;
     }
 
-    // Remove task by Task ID
-    public void removeTask(int taskId) {
+    //add at end
+    public void inserAtEnd(int taskId, String taskName, int priority, String dueDate) {
+        Task newtask = new Task(taskId, taskName, priority, dueDate);
+        if(head==null){
+            head=newtask;
+            newtask.next=head;
+            return;
+        }
+        Task current=head;
+        while(current.next!=head){
+            current=current.next;
+        }
+        current.next=newtask;
+        newtask.next=head;
+        return;
+    }
+
+    //add at speciic position
+    public void insertAtPosition(int taskId, String taskName, int priority, String dueDate, int position) {
+        Task newtask = new Task(taskId, taskName, priority, dueDate);
+        if (position < 0) {
+            System.out.println("Invalid position");
+            return;
+        }
+        if (position == 0) {
+            inserAtBeginning(taskId, taskName, priority, dueDate);
+            return;
+        }
         if(head==null) {
-            System.out.println("No tasks available.");
+            System.out.println("Invalid position");
+            return;
+        }
+        Task current = head;
+        for (int i = 0; i < position - 1; i++) {
+            current = current.next;
+            if (current == head) {
+                System.out.println("Invalid position");
+                return;
+            }
+        }
+        newtask.next = current.next;
+        current.next = newtask;
+        return;
+    }
+
+    // Remove task by ID
+    public void deleteById(int targetTaskId) {
+        if(head==null) {
+            System.out.println("No tasks");
             return;
         }
 
         Task current=head;
-        Task previous=tail;
+        Task previous=null;
 
         do {
-            if(current.taskId==taskId) {
-                if(current==head && current==tail) {
-                    head=tail=currentTask=null;
-                } else {
-                    previous.next=current.next;
-
-                    if(current==head) {
-                        head=current.next;
-                    }
-
-                    if(current==tail) {
-                        tail=previous;
-                    }
-
-                    tail.next=head;
-
-                    if(currentTask==current) {
-                        currentTask=current.next;
-                    }
+            if(current.taskId==targetTaskId) {
+                if(current.next==current) {
+                    head=null;
+                    System.out.println("Task deleted");
+                    current=null;
+                    return;
                 }
 
-                System.out.println("Task removed successfully.");
+                if(current==head) {
+                    Task last=head;
+
+                    while(last.next!=head) {
+                        last=last.next;
+                    }
+
+                    head=head.next;
+                    last.next=head;
+                } else {
+                    previous.next=current.next;
+                }
+
+                System.out.println("Task deleted");
+                current=null;
                 return;
             }
 
@@ -143,169 +133,88 @@ class CircularTaskList {
             current=current.next;
         } while(current!=head);
 
-        System.out.println("Task not found.");
+        System.out.println("Task not found");
     }
 
-    // View the current task
-    public void viewCurrentTask() {
-        if(currentTask==null) {
-            System.out.println("No tasks available.");
+    //view current task and move to the next task
+    public void viewCurrenttask(){
+        if(head==null){
+            System.out.println("No tasks");
             return;
         }
-
-        System.out.println("\n--- Current Task ---");
-        displayTask(currentTask);
+        if(current==null){
+            current=head;
+        }
+        System.out.println("Current task: "+current.taskName);
+        current=current.next;
     }
 
-    // Move to the next task
-    public void moveToNextTask() {
-        if(currentTask==null) {
-            System.out.println("No tasks available.");
+    //display the tasks
+    public void display(){
+        if(head==null){
+            System.out.println("No tasks");
             return;
         }
-
-        currentTask=currentTask.next;
-
-        System.out.println("Moved to the next task.");
-        displayTask(currentTask);
-    }
-
-    // Display all tasks starting from head
-    public void displayAllTasks() {
-        if(head==null) {
-            System.out.println("No tasks available.");
-            return;
-        }
-
         Task current=head;
-        System.out.println("\n--- All Tasks ---");
-
-        do {
-            displayTask(current);
+        int i=0;
+        do{
+            System.out.println("Task "+(i)+" details: "+"\nTask id: "+current.taskId+"\nTask name: "+current.taskName+"\nPriority: "+current.priority+"\nDue date: "+current.dueDate+"\n");
             current=current.next;
-        } while(current!=head);
+            i++;
+        }while(current!=head);
     }
 
-    // Search tasks by priority
-    public void searchByPriority(int priority) {
-        if(head==null) {
-            System.out.println("No tasks available.");
-            return;
+    //search byb priority
+    public boolean searchByPriority(int targetPriority){
+        if(head==null){
+            return false;
         }
-
         Task current=head;
-        boolean found=false;
-
-        do {
-            if(current.priority==priority) {
-                displayTask(current);
-                found=true;
+        do{
+            if(current.priority==targetPriority){
+                return  true;
             }
-
             current=current.next;
-        } while(current!=head);
-
-        if(!found) {
-            System.out.println("No tasks found with this priority.");
-        }
-    }
-
-    // Display one task
-    private void displayTask(Task task) {
-        System.out.println("Task ID: "+task.taskId);
-        System.out.println("Task Name: "+task.taskName);
-        System.out.println("Priority: "+task.priority);
-        System.out.println("Due Date: "+task.dueDate);
-        System.out.println("-----------------------------");
+        }while(current!=head);
+        return false;
     }
 }
 
+
 public class TaskScheduler {
     public static void main(String[] args) {
-        Scanner sc=new Scanner(System.in);
-        CircularTaskList list=new CircularTaskList();
-        int choice;
+        TaskLinkedList list=new TaskLinkedList();
 
-        do {
-            System.out.println("\n===== Task Scheduler =====");
-            System.out.println("1. Add task at beginning");
-            System.out.println("2. Add task at end");
-            System.out.println("3. Add task at specific position");
-            System.out.println("4. Remove task by ID");
-            System.out.println("5. View current task");
-            System.out.println("6. Move to next task");
-            System.out.println("7. Display all tasks");
-            System.out.println("8. Search task by priority");
-            System.out.println("9. Exit");
-            System.out.print("Enter your choice: ");
-            choice=sc.nextInt();
-            sc.nextLine();
+        //add tasks
+        list.inserAtBeginning(1,"Complete Java",1,"2026-10-12");
+        list.inserAtEnd(2,"Practice DSA",2,"2026-10-13");
+        list.inserAtEnd(3,"Revise OOP",3,"2026-10-14");
 
-            switch(choice) {
-                case 1:
-                case 2:
-                case 3: {
-                    System.out.print("Enter task ID: ");
-                    int taskId=sc.nextInt();
-                    sc.nextLine();
+        //display all tasks
+        System.out.println("All Tasks:");
+        list.display();
 
-                    System.out.print("Enter task name: ");
-                    String taskName=sc.nextLine();
+        //insert at a specific position
+        list.insertAtPosition(4,"Practice SQL",2,"2026-10-15",1);
+        System.out.println("After inserting at position 1:");
+        list.display();
 
-                    System.out.print("Enter priority (1 = highest): ");
-                    int priority=sc.nextInt();
-                    sc.nextLine();
+        //view current task and move to next
+        System.out.println("Viewing current tasks:");
+        list.viewCurrenttask();
+        list.viewCurrenttask();
 
-                    System.out.print("Enter due date (DD-MM-YYYY): ");
-                    String dueDate=sc.nextLine();
+        //search by priority
+        int targetPriority=2;
+        if(list.searchByPriority(targetPriority)){
+            System.out.println("Task with priority "+targetPriority+" found");
+        }else{
+            System.out.println("Task with priority "+targetPriority+" not found");
+        }
 
-                    if(choice==1) {
-                        list.addAtBeginning(taskId,taskName,priority,dueDate);
-                    } else if(choice==2) {
-                        list.addAtEnd(taskId,taskName,priority,dueDate);
-                    } else {
-                        System.out.print("Enter position (starting from 1): ");
-                        int position=sc.nextInt();
-                        sc.nextLine();
-
-                        list.addAtPosition(taskId,taskName,priority,dueDate,position);
-                    }
-                    break;
-                }
-
-                case 4:
-                    System.out.print("Enter task ID to remove: ");
-                    int deleteId=sc.nextInt();
-                    list.removeTask(deleteId);
-                    break;
-
-                case 5:
-                    list.viewCurrentTask();
-                    break;
-
-                case 6:
-                    list.moveToNextTask();
-                    break;
-
-                case 7:
-                    list.displayAllTasks();
-                    break;
-
-                case 8:
-                    System.out.print("Enter priority to search: ");
-                    int searchPriority=sc.nextInt();
-                    list.searchByPriority(searchPriority);
-                    break;
-
-                case 9:
-                    System.out.println("Exiting Task Scheduler.");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        } while(choice!=9);
-
-        sc.close();
+        //delete a task by ID
+        list.deleteById(3);
+        System.out.println("After deleting task ID 3:");
+        list.display();
     }
 }

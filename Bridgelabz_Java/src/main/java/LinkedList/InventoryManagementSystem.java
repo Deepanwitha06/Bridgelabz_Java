@@ -1,420 +1,269 @@
 package LinkedList;
+/*
+       using single linked list, inventory management system
+       methods: Add an item at the beginning, end, or at a specific position.
+       Remove an item based on Item ID.
+       Update the quantity of an item by Item ID.
+       Search for an item based on Item ID or Item Name.
+       Calculate and display the total value of inventory (Sum of Price * Quantity for each item).
+       Sort the inventory based on Item Name or Price in ascending or descending order.
+ */
 
-
-import java.util.Scanner;
-
-class Item {
+class Item{
     String itemName;
-    int itemId;
-    int quantity;
+    int itemID;
+    double quantity;
     double price;
     Item next;
 
-    Item(String itemName, int itemId, int quantity, double price) {
+    public Item(String itemName, int itemID, double quantity, double price){
+        this.itemID=itemID;
         this.itemName=itemName;
-        this.itemId=itemId;
-        this.quantity=quantity;
         this.price=price;
+        this.quantity=quantity;
         this.next=null;
     }
 }
 
-class InventoryLinkedList {
-    private Item head;
+class ItemLinkedList{
+    Item head;
 
-    // Add item at the beginning
-    public void addAtBeginning(String itemName, int itemId, int quantity, double price) {
-        Item newItem=new Item(itemName,itemId,quantity,price);
-        newItem.next=head;
-        head=newItem;
-
-        System.out.println("Item added at the beginning.");
-    }
-
-    // Add item at the end
-    public void addAtEnd(String itemName, int itemId, int quantity, double price) {
-        Item newItem=new Item(itemName,itemId,quantity,price);
-
-        if(head==null) {
-            head=newItem;
-        } else {
-            Item current=head;
-
-            while(current.next!=null) {
-                current=current.next;
-            }
-
-            current.next=newItem;
-        }
-
-        System.out.println("Item added at the end.");
-    }
-
-    // Add item at a specific position (1-based indexing)
-    public void addAtPosition(String itemName, int itemId, int quantity, double price, int position) {
-        if(position<1) {
-            System.out.println("Invalid position.");
+    //insert at begging
+    public void insertAtBeginning(String itemName, int itemID, double quantity, double price){
+        Item newitem=new Item( itemName,  itemID,  quantity,  price);
+        if(head==null){
+            head=newitem;
             return;
         }
+        newitem.next=head;
+        head=newitem;
+        return;
+    }
 
-        if(position==1) {
-            addAtBeginning(itemName,itemId,quantity,price);
+    public void insertAtEnd(String itemName, int itemID, double quantity, double price) {
+        Item newitem = new Item(itemName, itemID, quantity, price);
+        if(head==null){
+            head=newitem;
             return;
         }
-
         Item current=head;
-
-        for(int i=1;i<position-1 && current!=null;i++) {
+        while(current.next!=null){
             current=current.next;
         }
-
-        if(current==null) {
-            System.out.println("Invalid position.");
-            return;
-        }
-
-        Item newItem=new Item(itemName,itemId,quantity,price);
-        newItem.next=current.next;
-        current.next=newItem;
-
-        System.out.println("Item added at position "+position+".");
+        current.next=newitem;
+        newitem.next=null;
+        return;
     }
 
-    // Remove item by Item ID
-    public void removeItem(int itemId) {
-        if(head==null) {
-            System.out.println("Inventory is empty.");
+    public void insertAtPosition(String itemName, int itemID, double quantity, double price,int position) {
+        Item newitem = new Item(itemName, itemID, quantity, price);
+        if (position < 0) {
+            System.out.println("Invalid position");
             return;
         }
+        if (position == 0) {
+            insertAtBeginning(itemName, itemID, quantity, price);
+            return;
+        }
+        Item current = head;
+        for (int i = 0; i < position - 1 && current != null; i++) {
+            current = current.next;
+        }
+        if (current == null) {
+            System.out.println("Invalid position");
+            return;
+        }
+        newitem.next = current.next;
+        current.next = newitem;
+    }
 
-        if(head.itemId==itemId) {
+    //remove an item based on item id
+    public void deleteByItemid(int targetitemId){
+        if(head==null){
+            System.out.println("No items");
+            return;
+        }
+        if(head.itemID==targetitemId){
             head=head.next;
-            System.out.println("Item removed successfully.");
             return;
         }
-
         Item current=head;
-
-        while(current.next!=null && current.next.itemId!=itemId) {
-            current=current.next;
-        }
-
-        if(current.next==null) {
-            System.out.println("Item not found.");
-            return;
-        }
-
-        current.next=current.next.next;
-        System.out.println("Item removed successfully.");
-    }
-
-    // Update quantity by Item ID
-    public void updateQuantity(int itemId, int newQuantity) {
-        if(newQuantity<0) {
-            System.out.println("Quantity cannot be negative.");
-            return;
-        }
-
-        Item current=head;
-
-        while(current!=null) {
-            if(current.itemId==itemId) {
-                current.quantity=newQuantity;
-                System.out.println("Quantity updated successfully.");
+        while(current.next!=null){
+            if(current.next.itemID==targetitemId){
+                current.next=current.next.next;
                 return;
             }
-
             current=current.next;
-        }
 
-        System.out.println("Item not found.");
+        }
+        if(current.itemID==targetitemId){
+            current.next=null;
+            return;
+        }
+        System.out.println("no record with give id");
+        return;
     }
 
-    // Search item by Item ID
-    public void searchById(int itemId) {
+    //update quantity by itemID
+    public void updateQuantity(int targetitemID,double targetQuantity){
+        if(head==null){
+            System.out.println("No items");
+            return;
+        }
         Item current=head;
-
-        while(current!=null) {
-            if(current.itemId==itemId) {
-                displayItem(current);
+        while(current!=null){
+            if(current.itemID==targetitemID){
+                current.quantity=targetQuantity;
+                System.out.println("Successful update");
                 return;
             }
-
             current=current.next;
         }
-
-        System.out.println("Item not found.");
+        System.out.println("no record with give id");
+        return;
     }
 
-    // Search item by Item Name
-    public void searchByName(String itemName) {
-        Item current=head;
-        boolean found=false;
-
-        while(current!=null) {
-            if(current.itemName.equalsIgnoreCase(itemName)) {
-                displayItem(current);
-                found=true;
+    //search based on itemid or itemname
+    public boolean searchByItemID(int targetitemID){
+        if(head==null){
+            System.out.println("No items");
+            return false;
+        }Item current=head;
+        while(current!=null){
+            if(current.itemID==targetitemID){
+                return true;
             }
-
             current=current.next;
         }
-
-        if(!found) {
-            System.out.println("Item not found.");
-        }
+        System.out.println("no record with give id");
+        return false;
     }
-
-    // Calculate total inventory value
-    public void calculateTotalValue() {
+    public boolean searchByItemName(String targetitemName){
+        if(head==null){
+            System.out.println("No items");
+            return false;
+        }
         Item current=head;
-        double totalValue=0;
-
-        while(current!=null) {
-            totalValue+=current.price*current.quantity;
+        while(current!=null){
+            if(current.itemName.equalsIgnoreCase(targetitemName)){
+                return true;
+            }
             current=current.next;
         }
-
-        System.out.printf("Total inventory value: %.2f%n",totalValue);
+        System.out.println("no record with give name");
+        return false;
     }
 
-    // Display all items
-    public void displayInventory() {
-        if(head==null) {
-            System.out.println("Inventory is empty.");
+    public void totalValue(){
+        double total=0;
+        Item current=head;
+        while(current!=null){
+            total+=(current.price*current.quantity);
+            current=current.next;
+        }
+        System.out.println("Total value of inventory: "+total);
+        return;
+    }
+
+    //sort inventory
+
+    public void sortByPrice(){
+        if(head==null){
             return;
         }
 
-        Item current=head;
+        for(Item current=head;current.next!=null;current=current.next){
+            for(Item index=current.next;index!=null;index=index.next){
+                if(current.price>index.price){
+                    String tempName=current.itemName;
+                    current.itemName=index.itemName;
+                    index.itemName=tempName;
 
-        System.out.println("\n--- Inventory Records ---");
+                    int tempID=current.itemID;
+                    current.itemID=index.itemID;
+                    index.itemID=tempID;
 
-        while(current!=null) {
-            displayItem(current);
-            current=current.next;
+                    double tempQuantity=current.quantity;
+                    current.quantity=index.quantity;
+                    index.quantity=tempQuantity;
+
+                    double tempPrice=current.price;
+                    current.price=index.price;
+                    index.price=tempPrice;
+                }
+            }
+        }
+
+        Item displaycurrent=head;
+        while(displaycurrent!=null){
+            System.out.println("Item ID: "+displaycurrent.itemID+ "\nItem Name: "+displaycurrent.itemName+ "\nQuantity: "+displaycurrent.quantity+ "\nPrice: "+displaycurrent.price);
+            displaycurrent=displaycurrent.next;
         }
     }
 
-    // Display one item
-    private void displayItem(Item item) {
-        System.out.println("Item Name: "+item.itemName);
-        System.out.println("Item ID: "+item.itemId);
-        System.out.println("Quantity: "+item.quantity);
-        System.out.printf("Price: %.2f%n",item.price);
-        System.out.printf("Item Value: %.2f%n",item.price*item.quantity);
-        System.out.println("-----------------------------");
-    }
 
-    // Sort by Item Name or Price, ascending or descending
-    public void sortInventory(int sortBy, boolean ascending) {
-        if(head==null || head.next==null) {
-            System.out.println("Inventory sorted successfully.");
+
+    public void sortByName(){
+        if(head==null){
             return;
         }
 
-        head=mergeSort(head,sortBy,ascending);
-        System.out.println("Inventory sorted successfully.");
-    }
+        for(Item current=head;current.next!=null;current=current.next){
+            for(Item index=current.next;index!=null;index=index.next){
+                if(current.itemName.compareToIgnoreCase(index.itemName)>0){
+                    String tempName=current.itemName;
+                    current.itemName=index.itemName;
+                    index.itemName=tempName;
 
-    // Merge sort for the linked list
-    private Item mergeSort(Item start, int sortBy, boolean ascending) {
-        if(start==null || start.next==null) {
-            return start;
-        }
+                    int tempID=current.itemID;
+                    current.itemID=index.itemID;
+                    index.itemID=tempID;
 
-        Item middle=findMiddle(start);
-        Item secondHalf=middle.next;
-        middle.next=null;
+                    double tempQuantity=current.quantity;
+                    current.quantity=index.quantity;
+                    index.quantity=tempQuantity;
 
-        Item left=mergeSort(start,sortBy,ascending);
-        Item right=mergeSort(secondHalf,sortBy,ascending);
-
-        return merge(left,right,sortBy,ascending);
-    }
-
-    // Find the middle node using slow and fast pointers
-    private Item findMiddle(Item start) {
-        Item slow=start;
-        Item fast=start.next;
-
-        while(fast!=null && fast.next!=null) {
-            slow=slow.next;
-            fast=fast.next.next;
-        }
-
-        return slow;
-    }
-
-    // Merge two sorted lists
-    private Item merge(Item left, Item right, int sortBy, boolean ascending) {
-        Item dummy=new Item("",0,0,0);
-        Item current=dummy;
-
-        while(left!=null && right!=null) {
-            int comparison;
-
-            if(sortBy==1) {
-                comparison=left.itemName.compareToIgnoreCase(right.itemName);
-            } else {
-                comparison=Double.compare(left.price,right.price);
+                    double tempPrice=current.price;
+                    current.price=index.price;
+                    index.price=tempPrice;
+                }
             }
-
-            if(!ascending) {
-                comparison=-comparison;
-            }
-
-            if(comparison<=0) {
-                current.next=left;
-                left=left.next;
-            } else {
-                current.next=right;
-                right=right.next;
-            }
-
-            current=current.next;
         }
 
-        if(left!=null) {
-            current.next=left;
-        } else {
-            current.next=right;
+        Item displaycurrent=head;
+        while(displaycurrent!=null){
+            System.out.println("Item ID: "+displaycurrent.itemID+ "\nItem Name: "+displaycurrent.itemName+ "\nQuantity: "+displaycurrent.quantity+ "\nPrice: "+displaycurrent.price);
+            displaycurrent=displaycurrent.next;
         }
-
-        return dummy.next;
     }
 }
 
 public class InventoryManagementSystem {
-    public static void main(String[] args) {
-        Scanner sc=new Scanner(System.in);
-        InventoryLinkedList inventory=new InventoryLinkedList();
-        int choice;
+    public static void main(String[] args){
+        ItemLinkedList list=new ItemLinkedList();
 
-        do {
-            System.out.println("\n===== Inventory Management System =====");
-            System.out.println("1. Add item at beginning");
-            System.out.println("2. Add item at end");
-            System.out.println("3. Add item at specific position");
-            System.out.println("4. Remove item by ID");
-            System.out.println("5. Update item quantity");
-            System.out.println("6. Search item by ID");
-            System.out.println("7. Search item by name");
-            System.out.println("8. Display inventory");
-            System.out.println("9. Calculate total inventory value");
-            System.out.println("10. Sort inventory");
-            System.out.println("11. Exit");
-            System.out.print("Enter your choice: ");
-            choice=sc.nextInt();
-            sc.nextLine();
+        list.insertAtEnd("Laptop",101,5,50000);
+        list.insertAtEnd("Mouse",102,10,500);
+        list.insertAtBeginning("Keyboard",103,4,1500);
+        list.insertAtPosition("Monitor",104,3,8000,2);
 
-            switch(choice) {
-                case 1:
-                case 2:
-                case 3: {
-                    System.out.print("Enter item name: ");
-                    String itemName=sc.nextLine();
+        System.out.println("Inventory:");
+        list.sortByPrice();
 
-                    System.out.print("Enter item ID: ");
-                    int itemId=sc.nextInt();
+        System.out.println("\nSorted by item name:");
+        list.sortByName();
 
-                    System.out.print("Enter quantity: ");
-                    int quantity=sc.nextInt();
+        System.out.println("\nTotal inventory value:");
+        list.totalValue();
 
-                    System.out.print("Enter price: ");
-                    double price=sc.nextDouble();
-                    sc.nextLine();
+        System.out.println("\nSearch item ID 102:");
+        System.out.println(list.searchByItemID(102));
 
-                    if(itemId<=0 || quantity<0 || price<0) {
-                        System.out.println("Invalid ID, quantity, or price.");
-                        break;
-                    }
+        System.out.println("\nUpdating quantity:");
+        list.updateQuantity(102,15);
 
-                    if(choice==1) {
-                        inventory.addAtBeginning(itemName,itemId,quantity,price);
-                    } else if(choice==2) {
-                        inventory.addAtEnd(itemName,itemId,quantity,price);
-                    } else {
-                        System.out.print("Enter position (starting from 1): ");
-                        int position=sc.nextInt();
-                        sc.nextLine();
-
-                        inventory.addAtPosition(itemName,itemId,quantity,price,position);
-                    }
-                    break;
-                }
-
-                case 4:
-                    System.out.print("Enter item ID to remove: ");
-                    int deleteId=sc.nextInt();
-                    inventory.removeItem(deleteId);
-                    break;
-
-                case 5:
-                    System.out.print("Enter item ID: ");
-                    int updateId=sc.nextInt();
-
-                    System.out.print("Enter new quantity: ");
-                    int newQuantity=sc.nextInt();
-
-                    inventory.updateQuantity(updateId,newQuantity);
-                    break;
-
-                case 6:
-                    System.out.print("Enter item ID to search: ");
-                    int searchId=sc.nextInt();
-                    inventory.searchById(searchId);
-                    break;
-
-                case 7:
-                    System.out.print("Enter item name to search: ");
-                    String searchName=sc.nextLine();
-                    inventory.searchByName(searchName);
-                    break;
-
-                case 8:
-                    inventory.displayInventory();
-                    break;
-
-                case 9:
-                    inventory.calculateTotalValue();
-                    break;
-
-                case 10:
-                    System.out.println("Sort by:");
-                    System.out.println("1. Item Name");
-                    System.out.println("2. Price");
-                    System.out.print("Enter choice: ");
-                    int sortBy=sc.nextInt();
-
-                    if(sortBy!=1 && sortBy!=2) {
-                        System.out.println("Invalid sort option.");
-                        break;
-                    }
-
-                    System.out.println("Order:");
-                    System.out.println("1. Ascending");
-                    System.out.println("2. Descending");
-                    System.out.print("Enter choice: ");
-                    int order=sc.nextInt();
-
-                    if(order!=1 && order!=2) {
-                        System.out.println("Invalid order.");
-                        break;
-                    }
-
-                    inventory.sortInventory(sortBy,order==1);
-                    inventory.displayInventory();
-                    break;
-
-                case 11:
-                    System.out.println("Exiting Inventory Management System.");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        } while(choice!=11);
-
-        sc.close();
+        System.out.println("\nDeleting item ID 103:");
+        list.deleteByItemid(103);
+        list.sortByName();
     }
 }
